@@ -1,0 +1,509 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRODUSE · Add Schedule Reminder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" />
+  <style>
+    :root{
+      /* brand tokens */
+      --bg:#f9f9f9;           /* page background */
+      --surface:#ffffff;      /* card/appbar */
+      --text:#212121;         /* primary text */
+      --muted:#555555;        /* secondary text */
+      --border:#e6e6e6;       /* outlines */
+      --primary:#2e7d32;      /* green */
+      --primary-2:#1976d2;    /* blue (secondary accent) */
+      --soft-green:#e8f5e9;   /* subtle surface */
+      --soft-blue:#e3f2fd;    /* subtle surface */
+      --radius:12px;
+      --shadow:0 8px 30px rgba(0,0,0,.06);
+      --gap:16px;
+    }*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  -webkit-font-smoothing:antialiased; line-height:1.45;
+}
+
+/* App Bar */
+.appbar{position:sticky; top:0; z-index:50; background:var(--surface); box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.appbar-inner{max-width:1100px; margin:0 auto; height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 16px}
+.brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px}
+.brand i{color:var(--primary)}
+.brand span{font-size:16px}
+.app-actions{display:flex; align-items:center; gap:12px}
+.icon-btn{width:36px;height:36px; border-radius:50%; border:1px solid var(--border); background:#fff; display:grid; place-items:center; cursor:pointer}
+.icon-btn:hover{background:#fafafa}
+
+/* Layout */
+.wrap{max-width:1100px; margin:0 auto; padding:24px 16px 80px}
+.grid{display:grid; gap:20px}
+@media (min-width:980px){
+  .grid{grid-template-columns:1.2fr .8fr}
+}
+
+.card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+.card h3{margin:0 0 12px; font-size:16px}
+.sub{color:var(--muted); font-size:13px}
+
+/* Inputs */
+label{font-size:13px; color:var(--muted)}
+.field{display:flex; flex-direction:column; gap:8px}
+.row{display:grid; gap:12px}
+.row.cols-2{grid-template-columns:1fr 1fr}
+.row.cols-3{grid-template-columns:1fr 1fr 1fr}
+
+input[type="text"], input[type="date"], input[type="time"], select, textarea, input[type="number"]{
+  width:100%; border:1px solid var(--border); background:#fff; border-radius:10px; padding:12px 12px; font:inherit; color:inherit; outline:none; transition:box-shadow .2s, border-color .2s, background .2s
+}
+textarea{min-height:88px; resize:vertical}
+input:focus, select:focus, textarea:focus{border-color:#cbd5e1; box-shadow:0 0 0 3px rgba(25,118,210,.12)}
+
+/* Chips / toggles */
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; border:1px solid var(--border); background:#fff; cursor:pointer; user-select:none; font-size:13px}
+.chip input{display:none}
+.chip.active{border-color:var(--primary-2); background:var(--soft-blue)}
+
+.toggle{display:flex; align-items:center; justify-content:space-between; padding:14px 14px; border:1px solid var(--border); border-radius:12px; background:#fbfcff}
+.toggle:hover{background:#f3f7ff}
+.toggle .left{display:flex; align-items:center; gap:12px}
+.toggle i{width:20px; text-align:center}
+.toggle input[type="checkbox"]{width:20px; height:20px; accent-color:var(--primary-2); cursor:pointer}
+.toggle.active{border-color:var(--primary-2); background:var(--soft-blue)}
+
+/* Sticky preview */
+.preview{position:sticky; top:90px}
+.preview .line{display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px dashed var(--border)}
+.preview .line:last-child{border:0}
+.preview .label{min-width:92px; color:var(--muted); font-size:13px}
+
+/* CTA */
+.actions{position:sticky; bottom:0; background:linear-gradient(180deg, rgba(249,249,249,0) 0%, rgba(249,249,249,1) 40%)}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px; border:0; cursor:pointer; font-weight:600; border-radius:12px; padding:12px 16px
+}
+.btn-primary{background:var(--primary); color:#fff}
+.btn-primary:disabled{opacity:.6; cursor:not-allowed}
+.btn-secondary{background:#fff; color:var(--text); border:1px solid var(--border)}
+
+/* Small helpers */
+.muted{color:var(--muted)}
+.hint{font-size:12px; color:var(--muted)}
+.divider{height:1px; background:var(--border); margin:8px 0 4px}
+
+/* Success toast */
+.toast{position:fixed; right:18px; bottom:18px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:12px; padding:12px 14px; display:none}
+.toast.show{display:flex; align-items:center; gap:10px}
+
+/* Confetti-ish minimal */
+.burst{position:fixed; inset:0; pointer-events:none; display:none}
+.burst.show{display:block; animation:fade 900ms ease forwards}
+@keyframes fade{from{opacity:1} to{opacity:0}}
+
+  </style>
+</head>
+<body>
+  <!-- Appbar -->
+  <header class="appbar" role="banner">
+    <div class="appbar-inner">
+      <div class="brand" aria-label="PRODUSE">
+        <button class="icon-btn" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+        <i class="fa-solid fa-leaf"></i>
+        <span>PRODUSE</span>
+      </div>
+      <div class="app-actions">
+        <button class="icon-btn" aria-label="Home"><i class="fa-solid fa-house"></i></button>
+        <button class="icon-btn" aria-label="Account"><i class="fa-solid fa-user"></i></button>
+      </div>
+    </div>
+  </header>  <main class="wrap" aria-live="polite">
+    <div class="grid">
+      <!-- LEFT: Form -->
+      <section class="stack" aria-labelledby="form-title">
+        <!-- Quick Add / Title -->
+        <div class="card">
+          <h3 id="form-title">Tambah Schedule Reminder</h3>
+          <div class="row">
+            <div class="field">
+              <label for="title">Reminder Title</label>
+              <input id="title" type="text" placeholder="Contoh: Standup harian tim" autocomplete="off" required />
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="field">
+            <label for="quickAdd">Quick add (opsional)</label>
+            <input id="quickAdd" type="text" placeholder="Tulis cepat: besok 09:00 follow up client" />
+            <span class="hint">Tip: gunakan kata kunci seperti <b>hari ini</b>, <b>besok</b>, <b>minggu depan</b> + jam</span>
+          </div>
+          <div class="chips" style="margin-top:10px">
+            <span class="hint" style="align-self:center">Preset:</span>
+            <button class="chip" data-preset="today-09">Hari ini · 09:00</button>
+            <button class="chip" data-preset="tomorrow-09">Besok · 09:00</button>
+            <button class="chip" data-preset="nextweek-mon-09">Senin depan · 09:00</button>
+          </div>
+        </div><!-- Description -->
+    <div class="card">
+      <h3>Deskripsi</h3>
+      <div class="field">
+        <label for="desc">Details</label>
+        <textarea id="desc" placeholder="Tambahkan detail…"></textarea>
+      </div>
+    </div>
+
+    <!-- Date Time + TZ -->
+    <div class="card">
+      <h3>Tanggal & Waktu</h3>
+      <div class="row cols-3">
+        <div class="field">
+          <label for="date">Tanggal</label>
+          <input id="date" type="date" />
+        </div>
+        <div class="field">
+          <label for="time">Waktu</label>
+          <input id="time" type="time" />
+        </div>
+        <div class="field">
+          <label for="tz">Timezone</label>
+          <select id="tz" aria-label="Timezone">
+            <option value="auto">Gunakan timezone perangkat</option>
+            <option value="UTC">(UTC+00:00) UTC</option>
+            <option value="Europe/London">(UTC+00:00) London</option>
+            <option value="Europe/Paris">(UTC+01:00) Paris</option>
+            <option value="Europe/Berlin">(UTC+01:00) Berlin</option>
+            <option value="Africa/Johannesburg">(UTC+02:00) Johannesburg</option>
+            <option value="Europe/Moscow">(UTC+03:00) Moscow</option>
+            <option value="Asia/Dubai">(UTC+04:00) Dubai</option>
+            <option value="Asia/Karachi">(UTC+05:00) Karachi</option>
+            <option value="Asia/Kolkata">(UTC+05:30) India Standard Time</option>
+            <option value="Asia/Bangkok">(UTC+07:00) Bangkok, Jakarta</option>
+            <option value="Asia/Singapore">(UTC+08:00) Singapore</option>
+            <option value="Asia/Shanghai">(UTC+08:00) Beijing, Shanghai</option>
+            <option value="Asia/Tokyo">(UTC+09:00) Tokyo</option>
+            <option value="Asia/Seoul">(UTC+09:00) Seoul</option>
+            <option value="Australia/Sydney">(UTC+10:00) Sydney</option>
+            <option value="Pacific/Auckland">(UTC+12:00) Auckland</option>
+            <option value="America/New_York">(UTC-05:00) New York</option>
+            <option value="America/Chicago">(UTC-06:00) Chicago</option>
+            <option value="America/Denver">(UTC-07:00) Denver</option>
+            <option value="America/Los_Angeles">(UTC-08:00) Los Angeles</option>
+            <option value="Pacific/Honolulu">(UTC-10:00) Honolulu</option>
+          </select>
+          <span class="hint" id="tzHint"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repeat / Recurrence -->
+    <div class="card">
+      <h3>Repeat</h3>
+      <div class="row cols-2">
+        <div class="field">
+          <label for="repeat">Frekuensi</label>
+          <select id="repeat">
+            <option value="none">Tidak ada</option>
+            <option value="daily">Harian</option>
+            <option value="weekly">Mingguan</option>
+            <option value="monthly">Bulanan</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </div>
+        <div class="field" id="untilWrap" style="display:none">
+          <label for="until">Berakhir pada</label>
+          <input id="until" type="date" />
+          <span class="hint">Opsional</span>
+        </div>
+      </div>
+
+      <div id="customPane" style="display:none; margin-top:10px">
+        <div class="chips" id="dowChips" aria-label="Hari dalam minggu">
+          <button class="chip" data-dow="1">Sen</button>
+          <button class="chip" data-dow="2">Sel</button>
+          <button class="chip" data-dow="3">Rab</button>
+          <button class="chip" data-dow="4">Kam</button>
+          <button class="chip" data-dow="5">Jum</button>
+          <button class="chip" data-dow="6">Sab</button>
+          <button class="chip" data-dow="0">Min</button>
+        </div>
+        <div class="row cols-2" style="margin-top:10px">
+          <div class="field">
+            <label for="interval">Setiap</label>
+            <input type="number" id="interval" min="1" value="1" />
+            <span class="hint">contoh: 2 = setiap 2 minggu</span>
+          </div>
+          <div class="field">
+            <label for="scope">Satuan</label>
+            <select id="scope">
+              <option value="weeks">Minggu</option>
+              <option value="months">Bulan</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Remind before -->
+    <div class="card">
+      <h3>Remind Me Before</h3>
+      <div class="chips" id="remindChips">
+        <button class="chip" data-min="5">5 menit</button>
+        <button class="chip" data-min="10">10 menit</button>
+        <button class="chip" data-min="30">30 menit</button>
+        <button class="chip" data-min="60">1 jam</button>
+        <button class="chip" data-min="1440">1 hari</button>
+        <button class="chip" data-min="10080">1 minggu</button>
+        <button class="chip" data-min="custom">Custom…</button>
+      </div>
+      <div class="row cols-2" id="customRemind" style="display:none; margin-top:10px">
+        <div class="field">
+          <label for="customMin">Jumlah</label>
+          <input id="customMin" type="number" min="1" value="15" />
+        </div>
+        <div class="field">
+          <label for="customUnit">Satuan</label>
+          <select id="customUnit">
+            <option value="minute">menit</option>
+            <option value="hour">jam</option>
+            <option value="day">hari</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Channels -->
+    <div class="card">
+      <h3>Bagaimana kamu ingin diingatkan?</h3>
+      <div class="stack" style="display:flex; flex-direction:column; gap:10px">
+        <label class="toggle"><div class="left"><i class="fa-solid fa-bell"></i><div>
+          <div>Website Notification</div><div class="hint">Notifikasi di dalam aplikasi</div></div></div>
+          <input type="checkbox" id="ch-web" checked/></label>
+        <label class="toggle"><div class="left"><i class="fa-solid fa-envelope"></i><div>
+          <div>Email</div><div class="hint">Kirim email pengingat</div></div></div>
+          <input type="checkbox" id="ch-email"/></label>
+        <label class="toggle"><div class="left"><i class="fa-brands fa-whatsapp"></i><div>
+          <div>WhatsApp</div><div class="hint">Pengingat via WhatsApp</div></div></div>
+          <input type="checkbox" id="ch-wa"/></label>
+        <label class="toggle"><div class="left"><i class="fa-solid fa-message"></i><div>
+          <div>SMS</div><div class="hint">Pesan teks tradisional</div></div></div>
+          <input type="checkbox" id="ch-sms"/></label>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <div class="card" style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+        <div class="muted hint">Periksa kembali ringkasan di kanan. Kamu bisa simpan kapan saja.</div>
+        <div style="display:flex; gap:10px">
+          <button class="btn btn-secondary" id="resetBtn"><i class="fa-solid fa-rotate-left"></i>Reset</button>
+          <button class="btn btn-primary" id="saveBtn" disabled><i class="fa-solid fa-check"></i>Buat Reminder</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Preview -->
+  <aside class="preview card" aria-labelledby="preview-title">
+    <h3 id="preview-title">Ringkasan Reminder</h3>
+    <div class="line"><div class="label">Judul</div><div id="pv-title" class="sub">—</div></div>
+    <div class="line"><div class="label">Waktu</div><div id="pv-datetime" class="sub">—</div></div>
+    <div class="line"><div class="label">Repeat</div><div id="pv-repeat" class="sub">Tidak ada</div></div>
+    <div class="line"><div class="label">Remind</div><div id="pv-remind" class="sub">—</div></div>
+    <div class="line"><div class="label">Channel</div><div id="pv-ch" class="sub">Website Notification</div></div>
+    <div class="line"><div class="label">Catatan</div><div id="pv-desc" class="sub">—</div></div>
+  </aside>
+</div>
+
+  </main>  <!-- Toast + burst -->  <div class="toast" id="toast"><i class="fa-regular fa-circle-check" style="color:var(--primary)"></i><span>Reminder berhasil dibuat.</span></div>
+  <canvas class="burst" id="burst"></canvas>  <script>
+    // Utilities
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+    const state = {
+      title:"",
+      desc:"",
+      date:"",
+      time:"",
+      tz:"auto",
+      repeat:{type:"none", until:"", custom:{dows:new Set(), interval:1, scope:"weeks"}},
+      remind:{kind:"chip", minutes:[], custom:{value:15, unit:"minute"}},
+      channels:{web:true, email:false, wa:false, sms:false}
+    };
+
+    // Initialize timezone auto label
+    const deviceTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    $('#tzHint').textContent = `Perangkat: ${deviceTZ}`;
+
+    // Form bindings
+    $('#title').addEventListener('input', e=>{state.title=e.target.value.trim(); update();});
+    $('#desc').addEventListener('input', e=>{state.desc=e.target.value.trim(); update();});
+    $('#date').addEventListener('change', e=>{state.date=e.target.value; update();});
+    $('#time').addEventListener('change', e=>{state.time=e.target.value; update();});
+    $('#tz').addEventListener('change', e=>{state.tz=e.target.value; update();});
+
+    // Quick add parsing (very lightweight)
+    $('#quickAdd').addEventListener('change', (e)=>{
+      const text = e.target.value.toLowerCase();
+      const now = new Date();
+      const nextWeekStart = (()=>{const d=new Date(); const day=(d.getDay()+6)%7; d.setDate(d.getDate()+(7-day)); d.setHours(9,0,0,0); return d})();
+      if(text.includes('besok')){ const d=new Date(); d.setDate(d.getDate()+1); $('#date').value = d.toISOString().slice(0,10); $('#time').value = guessTime(text) || '09:00'; }
+      else if(text.includes('hari ini')){ const d=new Date(); $('#date').value = d.toISOString().slice(0,10); $('#time').value = guessTime(text) || '14:00'; }
+      else if(text.includes('minggu depan')){ $('#date').value = nextWeekStart.toISOString().slice(0,10); $('#time').value = guessTime(text) || '09:00'; }
+      update();
+    });
+
+    function guessTime(text){
+      const m = text.match(/(\d{1,2}):(\d{2})/); return m ? `${m[1].padStart(2,'0')}:${m[2]}` : null;
+    }
+
+    // Preset chips (today/tomorrow/next monday 09:00)
+    $$('#title, #date, #time');
+    $$('#quickAdd ~ .chips .chip').forEach(ch=>{
+      ch.addEventListener('click',()=>{
+        const p = ch.dataset.preset;
+        const d = new Date();
+        if(p==='today-09'){ d.setHours(9,0,0,0); }
+        if(p==='tomorrow-09'){ d.setDate(d.getDate()+1); d.setHours(9,0,0,0); }
+        if(p==='nextweek-mon-09'){
+          const day=d.getDay(); const diff=(8-day)%7; d.setDate(d.getDate()+diff); d.setHours(9,0,0,0);
+        }
+        $('#date').value = d.toISOString().slice(0,10);
+        $('#time').value = `${String(d.getHours()).padStart(2,'0')}:00`;
+        update();
+      });
+    });
+
+    // Repeat controls
+    $('#repeat').addEventListener('change', e=>{
+      state.repeat.type = e.target.value;
+      $('#customPane').style.display = e.target.value==='custom' ? 'block' : 'none';
+      $('#untilWrap').style.display = e.target.value==='none' ? 'none' : 'block';
+      update();
+    });
+    $('#until').addEventListener('change', e=>{state.repeat.until=e.target.value; update();});
+    $('#interval').addEventListener('input', e=>{state.repeat.custom.interval = Math.max(1, parseInt(e.target.value||'1',10)); update();});
+    $('#scope').addEventListener('change', e=>{state.repeat.custom.scope=e.target.value; update();});
+    $$('#dowChips .chip').forEach(ch=> ch.addEventListener('click', ()=>{
+      ch.classList.toggle('active');
+      const d = parseInt(ch.dataset.dow,10);
+      if(state.repeat.custom.dows.has(d)) state.repeat.custom.dows.delete(d); else state.repeat.custom.dows.add(d);
+      update();
+    }));
+
+    // Remind before chips
+    const remindChips = $('#remindChips');
+    remindChips.addEventListener('click', e=>{
+      const btn = e.target.closest('.chip'); if(!btn) return;
+      const v = btn.dataset.min;
+      if(v==='custom'){
+        $('#customRemind').style.display='grid';
+      }else{
+        btn.classList.toggle('active');
+        const minutes = parseInt(v,10);
+        const i = state.remind.minutes.indexOf(minutes);
+        if(i>-1) state.remind.minutes.splice(i,1); else state.remind.minutes.push(minutes);
+        state.remind.minutes.sort((a,b)=>a-b);
+        $('#customRemind').style.display='none';
+      }
+      update();
+    });
+    $('#customMin').addEventListener('input', e=>{state.remind.custom.value=parseInt(e.target.value||'1',10); update();});
+    $('#customUnit').addEventListener('change', e=>{state.remind.custom.unit=e.target.value; update();});
+
+    // Channels toggles
+    $$('.toggle').forEach(tg=>{
+      const input = $('input', tg);
+      const key = input.id.replace('ch-','');
+      input.addEventListener('change', ()=>{state.channels[key]=input.checked; tg.classList.toggle('active', input.checked); update();});
+      tg.addEventListener('click', (e)=>{ if(e.target.tagName!=='INPUT'){ input.checked=!input.checked; input.dispatchEvent(new Event('change')); }});
+      tg.classList.toggle('active', input.checked);
+    });
+
+    // Enable save when valid
+    function isValid(){ return state.title && state.date && state.time; }
+
+    function fmtChannels(){
+      const m = [];
+      if(state.channels.web) m.push('Website');
+      if(state.channels.email) m.push('Email');
+      if(state.channels.wa) m.push('WhatsApp');
+      if(state.channels.sms) m.push('SMS');
+      return m.length?m.join(', '):'—';
+    }
+
+    function fmtRemind(){
+      const chips = state.remind.minutes.map(x=> x<60? `${x} menit` : x%1440===0? `${x/1440} hari` : x%60===0? `${x/60} jam` : `${x} menit`);
+      const custom = $('#customRemind').style.display!=='none' ? [`${state.remind.custom.value} ${state.remind.custom.unit}`] : [];
+      return [...chips, ...custom].join(' · ') || '—';
+    }
+
+    function fmtRepeat(){
+      const r = state.repeat; if(r.type==='none') return 'Tidak ada';
+      const until = r.until ? `, sampai ${r.until}` : '';
+      if(r.type==='daily') return `Setiap hari${until}`;
+      if(r.type==='weekly') return `Setiap minggu${until}`;
+      if(r.type==='monthly') return `Setiap bulan${until}`;
+      if(r.type==='custom'){
+        const days = [...r.custom.dows].sort().map(d=>['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d]).join(', ');
+        return `Setiap ${r.custom.interval} ${r.custom.scope} pada ${days || '—'}${until}`;
+      }
+      return '—';
+    }
+
+    function buildDateStr(){
+      if(!(state.date && state.time)) return '—';
+      const tz = state.tz==='auto'? deviceTZ : state.tz;
+      const [hh,mm] = state.time.split(':');
+      const dt = new Date(`${state.date}T${hh}:${mm}:00`);
+      const fmt = new Intl.DateTimeFormat(undefined, {weekday:'short', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone: tz});
+      return `${fmt.format(dt)} (${tz})`;
+    }
+
+    function update(){
+      $('#pv-title').textContent = state.title || '—';
+      $('#pv-desc').textContent = state.desc || '—';
+      $('#pv-datetime').textContent = buildDateStr();
+      $('#pv-repeat').textContent = fmtRepeat();
+      $('#pv-remind').textContent = fmtRemind();
+      $('#pv-ch').textContent = fmtChannels();
+      $('#saveBtn').disabled = !isValid();
+    }
+
+    // Reset
+    $('#resetBtn').addEventListener('click', ()=>{
+      document.querySelector('form')?.reset();
+      location.reload();
+    });
+
+    // Save (demo)
+    $('#saveBtn').addEventListener('click', ()=>{
+      const payload = {...state};
+      // Demo: show toast + tiny confetti
+      showToast(); sprinkle();
+      console.log('Reminder payload', payload);
+    });
+
+    function showToast(){
+      const t = $('#toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);
+    }
+
+    // Minimal confetti burst
+    function sprinkle(){
+      const c = $('#burst'); const ctx = c.getContext('2d');
+      c.width = innerWidth; c.height = innerHeight;
+      const parts = Array.from({length:80},()=>({x:Math.random()*c.width, y:innerHeight, r:2+Math.random()*4, vy:3+Math.random()*4, vx:(Math.random()-.5)*4}));
+      c.classList.add('show');
+      let t=0; const id = setInterval(()=>{
+        ctx.clearRect(0,0,c.width,c.height);
+        parts.forEach(p=>{ p.y -= p.vy; p.x += p.vx; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle = Math.random()>.5? 'rgba(46,125,50,.9)': 'rgba(25,118,210,.9)'; ctx.fill(); });
+        if((t+=16)>900){ clearInterval(id); c.classList.remove('show'); }
+      },16);
+    }
+
+    // Prime defaults
+    update();
+  </script></body>
+</html>
