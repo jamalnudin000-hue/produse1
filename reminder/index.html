@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Schedule Reminder</title>
+    <link rel="stylesheet" type="text/css" href="stye.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" 
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"/>
+  </head>
+  <body>
+    <div id="top_navbar">
+      <button id="sidebar_icon"><i class="fa-solid fa-bars"></i></button>
+      <img src="../logo.png">
+      <div id="right_items">
+        <i class="fa-solid fa-house"></i>
+      <i class="fa-solid fa-user"></i>
+      </div>
+    </div>
+    <div id="card1">
+      <span>Reminder Title</span>
+      <br>
+      <input type="text" id="title_input" placeholder="Enter the title of this reminder">
+    </div>
+    <div id="card">
+      <span>Description</span>
+      <br>
+      <textarea id="description_input" placeholder="Add details of your reminder..."></textarea>
+    </div>
+    <div id="card">
+      <span>Date & Time</span>
+      <br>
+      <br>
+      <div id="grid">
+      <div class="field">
+        <label>Date</label>
+        <select class="date">
+          <option value="" disabled selected hidden>Select Date</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="11">11</option>
+  <option value="12">12</option>
+  <option value="13">13</option>
+  <option value="14">14</option>
+  <option value="15">15</option>
+  <option value="16">16</option>
+  <option value="17">17</option>
+  <option value="18">18</option>
+  <option value="19">19</option>
+  <option value="20">20</option>
+  <option value="21">21</option>
+  <option value="22">22</option>
+  <option value="23">23</option>
+  <option value="24">24</option>
+  <option value="25">25</option>
+  <option value="26">26</option>
+  <option value="27">27</option>
+  <option value="28">28</option>
+  <option value="29">29</option>
+  <option value="30">30</option>
+  <option value="31">31</option>
+</select>
+        </option>
+      </div>
+      <div class="field">
+        <label>Month</label>
+        <select class="month">
+          <option value="" disabled selected hidden>Select Month</option>
+          <option>January</option>
+          <option>February</option>
+          <option>March</option>
+          <option>April</option>
+          <option>May</option>
+          <option>June</option>
+          <option>July</option>
+          <option>August</option>
+          <option>September</option>
+          <option>October</option>
+          <option>November</option>
+          <option>December</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Year</label>
+        <select class="year">
+          <option value="" disabled selected hidden>Select Year</option>
+          <option>2025</option>
+          <option>2026</option>
+          <option>2027</option>
+          <option>2028</option>
+          <option>2029</option>
+          <option>2030</option>
+        </select>
+      </div>
+      </div>
+      <br>
+      <div style="line-height:20px;">
+        <label>Time</label>
+        <input id="time" type="time">
+        <br><br>
+        <label>Timezone</label>
+        <select id="time">
+          <option value="" disabled selected hidden>Select Timezone</option>
+        <option value="UTC">(UTC+00:00) UTC</option>
+<option value="Europe/London">(UTC+00:00) London</option>
+<option value="Europe/Paris">(UTC+01:00) Paris</option>
+<option value="Europe/Berlin">(UTC+01:00) Berlin</option>
+<option value="Africa/Johannesburg">(UTC+02:00) Johannesburg</option>
+<option value="Europe/Moscow">(UTC+03:00) Moscow</option>
+<option value="Asia/Dubai">(UTC+04:00) Dubai</option>
+<option value="Asia/Karachi">(UTC+05:00) Karachi</option>
+<option value="Asia/Kolkata">(UTC+05:30) India Standard Time</option>
+<option value="Asia/Bangkok">(UTC+07:00) Bangkok, Jakarta</option>
+<option value="Asia/Singapore">(UTC+08:00) Singapore, Kuala Lumpur</option>
+<option value="Asia/Shanghai">(UTC+08:00) Beijing, Shanghai</option>
+<option value="Asia/Tokyo">(UTC+09:00) Tokyo</option>
+<option value="Asia/Seoul">(UTC+09:00) Seoul</option>
+<option value="Australia/Sydney">(UTC+10:00) Sydney</option>
+<option value="Pacific/Auckland">(UTC+12:00) Auckland</option>
+<option value="America/New_York">(UTC-05:00) New York</option>
+<option value="America/Chicago">(UTC-06:00) Chicago</option>
+<option value="America/Denver">(UTC-07:00) Denver</option>
+<option value="America/Los_Angeles">(UTC-08:00) Los Angeles</option>
+<option value="Pacific/Honolulu">(UTC-10:00) Honolulu</option>
+</select>
+      </br>
+    </div>
+    </div>
+    <div id="card">
+  <span>Reminder lead</span><br>
+  <input id="reminder_lead" type="number" min="0" value="0" placeholder="minutes (0, 5, 10, 30, 60)">
+</div>
+    <div id="card">
+  <span>How would you like to be reminded?</span>
+
+  <div class="reminder-option">
+    <div class="option-left">
+      <i class="fa-solid fa-bell"></i>
+      <span>Website Notification</span>
+    </div>
+    <input type="checkbox">
+  </div>
+
+  <div class="reminder-option">
+    <div class="option-left">
+      <i class="fa-solid fa-envelope"></i>
+      <span>Email</span>
+    </div>
+    <input type="checkbox">
+  </div>
+
+  <div class="reminder-option">
+    <div class="option-left">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span>WhatsApp</span>
+    </div>
+    <input type="checkbox">
+  </div>
+
+  <div class="reminder-option">
+    <div class="option-left">
+      <i class="fa-brands fa-telegram"></i>
+      <span>SMS</span>
+    </div>
+    <input type="checkbox">
+  </div>
+</div>
+<br>
+<button type="submit" id="create_reminder">Create Reminders</button>
+  </body>
+</html>
